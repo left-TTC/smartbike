@@ -6,7 +6,7 @@
 
 #define BUFFER_SIZE3 8
      
-extern char fault_string[15];
+//extern char fault_string[15];
 extern int Lock_number;
 volatile int Tooth_Flag = 1;
 extern int BikeLock_number;
@@ -90,13 +90,13 @@ void Blue_check(void)
 	
 	if(PIN_State == 1)
 	{
-		strcpy(fault_string,"NO Tooth ");
+		//strcpy(fault_string,"NO Tooth ");
 		Tooth_Flag = 1;
 	}
 	else 
 	{
 		Tooth_Flag = 0;
-		strcpy(fault_string,"Tooth OK ");
+		//strcpy(fault_string,"Tooth OK ");
 	}
 }
 
@@ -108,7 +108,7 @@ void USART3_IRQHandler(void)
 {
 	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
 	{
-		uint8_t receivedata = USART_ReceiveData(USART3);
+		uint16_t receivedata = USART_ReceiveData(USART3);
 		
 		switch(receivedata)  //reveive 1,2,3,4
 		{
