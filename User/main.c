@@ -2,7 +2,7 @@
 #include "Delay.h"
 #include "OLED.h"
 #include "Serial.h"
-#include "WEBANDGPS.h"
+//#include "WEBANDGPS.h"
 #include "string.h"
 #include "AD.h"
 #include "BLUETOOTH.h"
@@ -25,14 +25,14 @@ int main(void)
 	OLED_Init();
 	Serial_Init();
 	AD_Init();
-	Serial_Init2();
+	//Serial_Init2();
 	OLED_Init();
-	AT_Reset();
-	AT_Init();
+	//AT_Reset();
+	//AT_Init();
 	Blue_Init();
 	Battery_Init();
 	Controller_Init();
-	GPS_open();                                //delay
+	//GPS_open();                                //delay
 	
 	uint32_t whilecount = 0;
 	uint32_t Batterylockcount = 0;
@@ -56,7 +56,7 @@ int main(void)
 		
 		if (whilecount%100==0)       //a whilecount == 0.01s   1s
 		{
-		    Lock_Do();              //judge whether to issue an unlock command
+		    //Lock_Do();              //judge whether to issue an unlock command
 			Blue_check();           //Determine whether Bluetooth is connected
 		}
 		
@@ -65,11 +65,11 @@ int main(void)
 		{
 			if(Bikelockcount%10==0)        //logically redundant ,set just at once 
 			{
-				DTR_Disable();
+				//DTR_Disable();
 				Controller_on();
 				Bikelockcount ++;           //when Bikelockcount = 1£¬don't enter the loop
 			}
-			if(whilecount%100==0)         
+ 			if(whilecount%100==0)         
 			{
 				unLockBikeCommand1();
 			}			
@@ -88,33 +88,33 @@ int main(void)
 			}
 			if ( whilecount% 600==0)               //1min = 60s = 60*100  6s
 			{
-				GPS_Send();                        
+				//GPS_Send();                        
 			}
 			if (whilecount % 1000 == 0)            //10s check the network connection status
 			{
-				MQTT_Check();
-				CSQ_Check();
+				//MQTT_Check();
+				//CSQ_Check();
 				Noblue_dirve = 0;                  //reset,prevent the next Bluetooth disconnection and lock car directly without notification
 			}
 			if (whilecount % 1000 == 20)           //respond to the network situation
 			{
-				Check_Netstate();
+				//Check_Netstate();
 			}
 			if (whilecount % 3000 == 0)       //30s
 			{
-				if(Tooth_Flag == 1 && Site_move == 1)     //BuleTooth disconnected and haven't moved for a 2 min
-				{
-					check_tooth ++;
-					if(check_tooth > 5)
-					{
-						Send_LongTimeNoMove();     //notify
-						BikeLock_number = 0;       //Bikelock
-					}
-				}
-				else if(Tooth_Flag == 0 || Site_move == 0)  
-				{
-					check_tooth = 0;
-				}
+				//if(Tooth_Flag == 1 && Site_move == 1)     //BuleTooth disconnected and haven't moved for a 2 min
+				//{
+					//check_tooth ++;
+					//if(check_tooth > 5)
+					//{
+					//	Send_LongTimeNoMove();     //notify
+					//	BikeLock_number = 0;       //Bikelock
+					//}
+				//}
+				//else if(Tooth_Flag == 0 || Site_move == 0)  
+				//{
+				//	check_tooth = 0;
+				//}
 			}
 			if(whilecount % 2000 == 0)
 			{
@@ -128,7 +128,7 @@ int main(void)
 		{
 			if(Bikelockcount%10==0)        //logically redundant ,set just at once 
 			{
-				DTR_Disable();
+				//DTR_Disable();
 				Controller_on();
 				Bikelockcount ++;          //disconnect at the befinning:open;disconnect when driving:pin has been setten
 			}
@@ -146,28 +146,28 @@ int main(void)
 			}
 			if(whilecount%300== 0)
 			{
-				OLED_ShowString(3,1,fault_string);
-				OLED_ShowString(4,1,Signal_String);
+				//OLED_ShowString(3,1,fault_string);
+				//OLED_ShowString(4,1,Signal_String);
 			}
 			if ( whilecount% 600==0)               //1min = 60s = 60*100  6s
 			{
-				GPS_Send();                        
+				//GPS_Send();                        
 			}
 			if (whilecount % 1000 == 0)
 			{
-				MQTT_Check();
-				CSQ_Check();
+				//MQTT_Check();
+				//CSQ_Check();
 			}
 			if (whilecount % 1000 == 20)
 			{
-				Check_Netstate();
+				//Check_Netstate();
 			}
 			if(whilecount % 500 == 0)
 			{
 				Noblue_dirve ++;
 				if(Noblue_dirve == 1)
 				{
-					Send_NoBluetooth();              //issue a warning in the fifth second
+					//Send_NoBluetooth();              //issue a warning in the fifth second
 				}
 				else if (Noblue_dirve > 5)
 				{
@@ -193,24 +193,24 @@ int main(void)
 			{
 				if(Voltage > 1)
 				{
-					Send_IllegalMove();
+					//Send_IllegalMove();
 				}					
 			}
 			if(whilecount% 1500==0)            //10s
 			{
-				Get_BatteryLockStateoff();					
+				//Get_BatteryLockStateoff();					
 			}
 			if(whilecount% 30000==0)            //1min = 60s = 60*100  1000ms =1s  5min
 			{
-				DTR_Disable();                      	
+				//DTR_Disable();                      	
 			}
 			if(whilecount% 30000==1000)            //1min = 60s = 60*100  1000ms =1s  5min
 			{
-				GPS_Send();                       	
+				//GPS_Send();                       	
 			}
 			if(whilecount% 30000==1100)            //1min = 60s = 60*100  1000ms =1s  5min
 			{
-				DTR_Enable();                       	
+				//XDTR_Enable();                       	
 			}
 			
 		}
