@@ -1,7 +1,7 @@
 .\objects\controller.o: Hardware\Controller.c
 .\objects\controller.o: .\Start\stm32f10x.h
 .\objects\controller.o: .\Start\core_cm3.h
-.\objects\controller.o: D:\keil app\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\controller.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\controller.o: .\Start\system_stm32f10x.h
 .\objects\controller.o: .\User\stm32f10x_conf.h
 .\objects\controller.o: .\Library\stm32f10x_adc.h
@@ -29,4 +29,4 @@
 .\objects\controller.o: .\Library\stm32f10x_wwdg.h
 .\objects\controller.o: .\Library\misc.h
 .\objects\controller.o: Hardware\SERIAL.h
-.\objects\controller.o: D:\keil app\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\controller.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

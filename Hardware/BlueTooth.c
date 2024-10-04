@@ -36,8 +36,8 @@ void Blue_Init(void)//USART3
 	GPIO_Init(GPIOC, &GPIO_InitStructure);	
 	
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;     
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;     
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
 	USART_InitTypeDef USART_InitStructure;
@@ -108,48 +108,53 @@ void Blue_check(void)
 
 //------------------------------------IQ------------------------------------------------  
 volatile uint16_t bufferIndex1 = 0;
+uint8_t index1 = 0;
+char receivedata1[BUFFER_SIZE3];
 //         0xFFE1: Write Without Response APP --> UART?           0xFFE2: Notify  UART --> APP?
 //   0x01 LockBike    0x02 Unlockbike  0x03 batterylock  0x04  batteryUnlock
+
 void USART3_IRQHandler(void)
 {
-	 if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+    if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  
     {
-        char receivedata[BUFFER_SIZE3];  
-        uint8_t index = 0;
+        char byte = USART_ReceiveData(USART3); 
 
-        while (index < BUFFER_SIZE3 - 1) 
+        if (byte == '$' || index1 >= BUFFER_SIZE3 - 1)
         {
-            uint16_t byte = USART_ReceiveData(USART3);
-            if (byte == '\n') 
-                break;
-            receivedata[index++] = (char)byte;
-        }
-        receivedata[index] = '\0';  
+            receivedata1[index1] = '\0';  
+			
+			if (strstr(receivedata1, "unbikelock") != NULL)
+            {
+                BikeLock_number = 0;  
+            }
+            else if (strstr(receivedata1, "bikelock") != NULL)
+            {
+                 BikeLock_number = 1; 
+			}
+			else if (strstr(receivedata1, "unbatterylock") != NULL)
+            {
+                BatteryLock_number = 0; 
+            }				
+            else if (strstr(receivedata1, "batterylock") != NULL)
+            {
+                BatteryLock_number = 1; 
+            }
+            else
+            {
+                Send_AT_Command("unknown command");
+            }
 
-        GPIO_SetBits(GPIOC, GPIO_Pin_13);  
-
-        if (strcmp(receivedata, "bikelock") == 0)
-        {
-            BikeLock_number = 1;  
-        }
-        else if (strcmp(receivedata, "unbikelock") == 0)
-        {
-            BikeLock_number = 0;  
-        }
-        else if (strcmp(receivedata, "batterylock") == 0)
-        {
-            BatteryLock_number = 1;  
-        }
-        else if (strcmp(receivedata, "unbatteryloc") == 0)
-        {
-            BatteryLock_number = 0;  
+			memset(receivedata1,0,BUFFER_SIZE3);
+            index1 = 0;  
         }
         else
         {
-            Send_AT_Command("unknown command");
+            receivedata1[index1++] = byte;  
         }
 
-        USART_ClearITPendingBit(USART3, USART_IT_RXNE); 
+        GPIO_SetBits(GPIOC, GPIO_Pin_13);  
+
+        USART_ClearITPendingBit(USART3, USART_IT_RXNE);  
     }
 }
 
