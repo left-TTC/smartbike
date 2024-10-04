@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "Battery.h"
 
-#define BUFFER_SIZE3 8
+#define BUFFER_SIZE3 32
      
 //extern char fault_string[15];
 extern int Lock_number;
@@ -17,7 +17,8 @@ void Blue_Init(void)//USART3
 {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);                                   
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);  
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE); 
 	
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  
@@ -29,9 +30,14 @@ void Blue_Init(void)//USART3
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;         
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;          //used  to control the device other than the central control
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);	
+	
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;     
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;     
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
 	USART_InitTypeDef USART_InitStructure;
@@ -106,29 +112,44 @@ volatile uint16_t bufferIndex1 = 0;
 //   0x01 LockBike    0x02 Unlockbike  0x03 batterylock  0x04  batteryUnlock
 void USART3_IRQHandler(void)
 {
-	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
-	{
-		uint16_t receivedata = USART_ReceiveData(USART3);
-		
-		switch(receivedata)  //reveive 1,2,3,4
-		{
-			case 0x01:
-				BikeLock_number = 1;           //1 for open;0 for off
-				break;
-			case 0x02:
-				BikeLock_number = 0;
-				break;
-			case 0x03:
-				BatteryLock_number = 1;
-				break;
-			case 0x04:
-				BatteryLock_number = 0;
-				break;
-			default:
-				Send_AT_Command("unkonwn command");
-				break;
-		}
-		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
-	}
+	 if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+    {
+        char receivedata[BUFFER_SIZE3];  
+        uint8_t index = 0;
+
+        while (index < BUFFER_SIZE3 - 1) 
+        {
+            uint16_t byte = USART_ReceiveData(USART3);
+            if (byte == '\n') 
+                break;
+            receivedata[index++] = (char)byte;
+        }
+        receivedata[index] = '\0';  
+
+        GPIO_SetBits(GPIOC, GPIO_Pin_13);  
+
+        if (strcmp(receivedata, "bikelock") == 0)
+        {
+            BikeLock_number = 1;  
+        }
+        else if (strcmp(receivedata, "unbikelock") == 0)
+        {
+            BikeLock_number = 0;  
+        }
+        else if (strcmp(receivedata, "batterylock") == 0)
+        {
+            BatteryLock_number = 1;  
+        }
+        else if (strcmp(receivedata, "unbatteryloc") == 0)
+        {
+            BatteryLock_number = 0;  
+        }
+        else
+        {
+            Send_AT_Command("unknown command");
+        }
+
+        USART_ClearITPendingBit(USART3, USART_IT_RXNE); 
+    }
 }
 

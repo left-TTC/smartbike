@@ -1,7 +1,7 @@
 .\objects\battery.o: Hardware\Battery.c
 .\objects\battery.o: .\Start\stm32f10x.h
 .\objects\battery.o: .\Start\core_cm3.h
-.\objects\battery.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\battery.o: D:\keil app\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\battery.o: .\Start\system_stm32f10x.h
 .\objects\battery.o: .\User\stm32f10x_conf.h
 .\objects\battery.o: .\Library\stm32f10x_adc.h
@@ -29,4 +29,4 @@
 .\objects\battery.o: .\Library\stm32f10x_wwdg.h
 .\objects\battery.o: .\Library\misc.h
 .\objects\battery.o: Hardware\WEBANDGPS.h
-.\objects\battery.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\battery.o: D:\keil app\ARM\ARMCC\Bin\..\include\string.h
